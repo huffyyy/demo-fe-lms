@@ -1,18 +1,37 @@
 import React, { useState } from "react";
-import { useParams, useRevalidator } from "react-router-dom";
 import PropTypes from "prop-types";
-import { useMutation } from "@tanstack/react-query";
 import ConfirmModal from "../../../components/common/confirmModal";
 import ErrorToast from "../../../components/common/errorToast";
 import { useConfirmModal } from "../../../components/common/useConfirmModal";
-import { deleteStudentsCourse } from "../../../services/courseService";
+
+// ✅ Mock data (contoh daftar student yang terdaftar di course)
+let mockCourseStudents = [
+  { id: "s1", name: "Andi Saputra", imageUrl: "" },
+  { id: "s2", name: "Budi Rahman", imageUrl: "" },
+  { id: "s3", name: "Citra Dewi", imageUrl: "" }
+];
+
+// ✅ Simulasi penghapusan student dari course
+const deleteMockStudentFromCourse = async (studentId) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const exists = mockCourseStudents.some((s) => s.id === studentId);
+      if (!exists) {
+        reject(new Error("Student not found in course"));
+      } else {
+        mockCourseStudents = mockCourseStudents.filter((s) => s.id !== studentId);
+        resolve({ status: "success", deletedId: studentId });
+      }
+    }, 700);
+  });
+};
 
 export default function StudentItem({ imageUrl, name, id }) {
-  const revalidator = useRevalidator();
   const confirmModal = useConfirmModal();
-  const params = useParams();
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
+  // 🔤 Generate warna avatar berdasarkan nama
   const stringToHsl = (str) => {
     let hash = 0;
     for (let i = 0; i < str?.length; i++) {
@@ -25,37 +44,33 @@ export default function StudentItem({ imageUrl, name, id }) {
   const initial = name?.charAt(0)?.toUpperCase() ?? "U";
   const avatarColor = stringToHsl(name ?? "User");
 
-  const { isLoading, mutateAsync } = useMutation({
-    mutationFn: () => deleteStudentsCourse(id, params.id),
-    onError: (err) => {
-      setError(err.message || "Failed to delete student from course");
-      console.error("Delete student from course error:", err);
-    },
-    onSuccess: () => {
-      revalidator.revalidate();
-    }
-  });
-
+  // 🧹 Fungsi hapus student (mock)
   const handleDeleteClick = () => {
     setError(null);
     confirmModal.open(async () => {
+      setIsLoading(true);
       try {
-        await mutateAsync();
+        await deleteMockStudentFromCourse(id);
+        console.log(`✅ Removed student ${name} (${id})`);
+        // Bisa tambahkan callback revalidate di parent nanti
       } catch (err) {
         console.error(err);
+        setError(err.message || "Failed to remove student");
+      } finally {
+        setIsLoading(false);
+        confirmModal.close();
       }
     });
   };
 
   const handleCloseModal = () => {
-    if (!isLoading) {
-      confirmModal.close();
-    }
+    if (!isLoading) confirmModal.close();
   };
 
   return (
     <>
       <div className="card flex items-center gap-5">
+        {/* Avatar */}
         <div className="relative flex shrink-0 w-20 h-20">
           <div className="rounded-[20px] overflow-hidden w-full h-full">
             {imageUrl ? (
@@ -78,21 +93,24 @@ export default function StudentItem({ imageUrl, name, id }) {
           </div>
         </div>
 
+        {/* Nama Student */}
         <div className="w-full">
           <h3 className="font-bold text-xl leading-[30px] line-clamp-1">{name}</h3>
         </div>
 
+        {/* Tombol Aksi */}
         <div className="flex justify-end items-center gap-3">
           <button
             type="button"
             disabled={isLoading}
             onClick={handleDeleteClick}
-            className="w-fit rounded-full p-[14px_20px] bg-[#FF435A] font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed">
-            {isLoading ? "Deleting..." : "Delete"}
+            className="w-fit rounded-full p-[14px_20px] bg-[#FF435A] font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:bg-[#E63950]">
+            {isLoading ? "Removing..." : "Remove"}
           </button>
         </div>
       </div>
 
+      {/* Toast & Modal */}
       <ErrorToast message={error} onClose={() => setError(null)} />
 
       <ConfirmModal

@@ -1,35 +1,47 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { Link, useRevalidator } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
-import { deleteDetailContent } from "../../../services/courseService";
+import { Link } from "react-router-dom";
 import ConfirmModal from "../../../components/common/confirmModal";
 import ErrorToast from "../../../components/common/errorToast";
 import { useConfirmModal } from "../../../components/common/useConfirmModal";
 
+// ✅ Mock storage (contoh, bisa diganti localStorage/Context)
+let mockContents = [
+  { _id: "c1", title: "Introduction to React", type: "video", courseId: "1" },
+  { _id: "c2", title: "Understanding JSX", type: "text", courseId: "1" }
+];
+
+// Simulasi penghapusan data mock
+const deleteMockContent = async (id) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const exists = mockContents.some((item) => item._id === id);
+      if (!exists) return reject(new Error("Content not found"));
+      mockContents = mockContents.filter((item) => item._id !== id);
+      resolve({ status: "success", deletedId: id });
+    }, 600);
+  });
+};
+
 export default function ContentItem({ id, index, type, title, courseId }) {
-  const revalidator = useRevalidator();
   const confirmModal = useConfirmModal();
   const [error, setError] = useState(null);
-
-  const { isLoading, mutateAsync } = useMutation({
-    mutationFn: () => deleteDetailContent(id),
-    onSuccess: () => {
-      revalidator.revalidate();
-    },
-    onError: (err) => {
-      setError(err.message || "Failed to delete content");
-      console.error("Delete content error:", err);
-    }
-  });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleDeleteClick = () => {
     setError(null);
     confirmModal.open(async () => {
+      setIsLoading(true);
       try {
-        await mutateAsync();
+        await deleteMockContent(id);
+        console.log(`✅ Deleted content ${id}`);
+        // Bisa tambahkan callback revalidate atau refresh di parent
       } catch (err) {
         console.error(err);
+        setError(err.message || "Failed to delete content");
+      } finally {
+        setIsLoading(false);
+        confirmModal.close();
       }
     });
   };
@@ -56,6 +68,7 @@ export default function ContentItem({ id, index, type, title, courseId }) {
   return (
     <>
       <div className="card flex items-center gap-5">
+        {/* Thumbnail & Index */}
         <div className="relative flex shrink-0 w-[140px] h-[110px]">
           <p className="absolute -top-[10px] -left-[10px] flex shrink-0 w-[30px] h-[30px] rounded-full items-center justify-center text-center bg-[#1E40AF] text-white z-10">
             <span className="font-bold text-sm leading-[21px]">{index}</span>
@@ -63,13 +76,14 @@ export default function ContentItem({ id, index, type, title, courseId }) {
           <div className="rounded-[20px] border border-[#CFDBEF] bg-[#D9D9D9] overflow-hidden w-full h-full">
             <img
               src={`/assets/images/thumbnails/cover-${type}.png`}
-              className="w-full h-full object-cover "
+              className="w-full h-full object-cover"
               alt={`${title} thumbnail`}
               loading="lazy"
             />
           </div>
         </div>
 
+        {/* Title & Type */}
         <div className="w-full">
           <h3 className="font-bold text-xl leading-[30px] line-clamp-1" title={title}>
             {title}
@@ -82,6 +96,7 @@ export default function ContentItem({ id, index, type, title, courseId }) {
           </div>
         </div>
 
+        {/* Action Buttons */}
         <div className="flex justify-end items-center gap-3">
           <button
             type="button"
@@ -89,7 +104,7 @@ export default function ContentItem({ id, index, type, title, courseId }) {
             onClick={handleDeleteClick}
             className="w-fit rounded-full p-[14px_20px] bg-[#FF435A] font-semibold text-white text-nowrap hover:bg-[#E63950] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label={`Delete ${title} content`}>
-            Delete
+            {isLoading ? "Deleting..." : "Delete"}
           </button>
           <Link
             to={`/manager/courses/${courseId}/edit/${id}`}
@@ -100,6 +115,7 @@ export default function ContentItem({ id, index, type, title, courseId }) {
         </div>
       </div>
 
+      {/* Toast & Modal */}
       <ErrorToast message={error} onClose={() => setError(null)} />
 
       <ConfirmModal

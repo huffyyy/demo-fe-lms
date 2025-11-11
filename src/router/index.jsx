@@ -3,6 +3,7 @@ import LandingPage from "../pages/Landing/";
 import ManagerHomePage from "../pages/Manager/Home";
 import SignInPage from "../pages/SignIn";
 import SignUpPage from "../pages/SignUp";
+import PricingPage from "../pages/SignUp/pricing";
 import SuccesCheckoutPage from "../pages/SuccesCheckout";
 import LayoutDashboard from "../components/Layout";
 import ManageCoursePage from "../pages/Manager/Courses";
@@ -14,12 +15,27 @@ import ManageStudentsPage from "../pages/Manager/Students";
 import StudentPage from "../pages/Student/StudentOverview";
 import { MANAGER_SESSION, STRORAGE_KEY, STUDENT_SESSION } from "../utils/const";
 import secureLocalStorage from "react-secure-storage";
-import { getCategories, getCourseDetail, getCourses, getDetailContent, getStudentsCourse } from "../services/courseService";
 import ManageStudentCreatePage from "../pages/Manager/Student-Create";
-import { getCoursesStudents, getDetailStudent, getStudents } from "../services/studentServices";
 import StudentsCourseList from "../pages/Manager/Student-Course";
 import StudentForm from "../pages/Manager/Student-Course/student-form";
-import { getOverviews } from "../services/overvieService";
+
+import {
+  mockOverview,
+  mockCourses,
+  mockCourseDetails,
+  mockStudents,
+  mockManagerSession,
+  mockStudentSession
+} from "../utils/mockData";
+
+const mockCategories = {
+  data: [
+    { _id: "cat-frontend", name: "Frontend" },
+    { _id: "cat-backend", name: "Backend" },
+    { _id: "cat-database", name: "Database" },
+    { _id: "cat-devops", name: "DevOps" }
+  ]
+};
 
 const router = createBrowserRouter([
   {
@@ -31,7 +47,7 @@ const router = createBrowserRouter([
     path: "/manager/sign-in",
     loader: async () => {
       const session = secureLocalStorage.getItem(STRORAGE_KEY);
-      if (session && session === "manager") {
+      if (session && (session.role === "manager" || session === "manager")) {
         throw redirect("/manager");
       }
       return true;
@@ -42,7 +58,7 @@ const router = createBrowserRouter([
     path: "/manager/sign-up",
     loader: async () => {
       const session = secureLocalStorage.getItem(STRORAGE_KEY);
-      if (session && session === "manager") {
+      if (session && (session.role === "manager" || session === "manager")) {
         throw redirect("/manager");
       }
       return true;
@@ -50,62 +66,84 @@ const router = createBrowserRouter([
     element: <SignUpPage />
   },
   {
+    path: "/manager/sign-up/pricing",
+    element: <PricingPage />
+  },
+  {
     path: "/success-checkout",
     element: <SuccesCheckoutPage />
   },
+
   {
     path: "/manager",
     id: MANAGER_SESSION,
     loader: async () => {
-      const session = secureLocalStorage.getItem(STRORAGE_KEY);
-      if (!session || session.role !== "manager") {
-        throw redirect("/manager/sign-in");
-      }
-      return session;
+      const session = secureLocalStorage.getItem(STRORAGE_KEY) || mockManagerSession;
+      return typeof session === "string" ? mockManagerSession : session;
     },
     element: <LayoutDashboard />,
     children: [
       {
         index: true,
         loader: async () => {
-          const overviews = await getOverviews();
-          return overviews?.data;
+          return mockOverview;
         },
         element: <ManagerHomePage />
       },
       {
         path: "courses",
         loader: async () => {
-          const data = await getCourses();
-          return data;
+          return mockCourses;
         },
         element: <ManageCoursePage />
       },
       {
         path: "courses/create",
         loader: async () => {
-          const categories = await getCategories();
-          return { categories, course: null };
+          return { categories: mockCategories, course: null };
         },
         element: <ManageCreateCoursePage />
       },
       {
         path: "courses/edit/:id",
         loader: async ({ params }) => {
-          const categories = await getCategories();
-          const course = await getCourseDetail(params.id);
-          return { categories, course: course?.data ?? null };
+          return { categories: mockCategories, course: mockCourseDetails };
         },
         element: <ManageCreateCoursePage />
       },
       {
         path: "courses/:id",
         loader: async ({ params }) => {
-          const course = await getCourseDetail(params.id);
-          return course?.data;
+          const { mockCourses } = await import("../utils/mockData");
+          const course = mockCourses.find((c) => c._id === params.id);
+
+          if (!course) {
+            throw new Response("Course not found", { status: 404 });
+          }
+
+          return {
+            ...course,
+            details: course.details || [
+              {
+                _id: "d1",
+                title: "Introduction",
+                type: "video",
+                duration: "5m",
+                description: "Welcome to the course!"
+              },
+              {
+                _id: "d2",
+                title: "Main Lesson",
+                type: "text",
+                duration: "15m",
+                description: "Learn the core concepts step by step."
+              }
+            ]
+          };
         },
         element: <ManageCourseDetailPage />
       },
+
       {
         path: "courses/:id/create",
         element: <ManageCourseContentCreatePage />
@@ -113,24 +151,23 @@ const router = createBrowserRouter([
       {
         path: "courses/:id/edit/:contentId",
         loader: async ({ params }) => {
-          const content = await getDetailContent(params.contentId);
-          return content?.data;
+          const content = mockCourseDetails.details.find((d) => d._id === params.contentId) || null;
+          return content;
         },
         element: <ManageCourseContentCreatePage />
       },
       {
         path: "courses/:id/preview",
-        loader: async ({ params }) => {
-          const course = await getCourseDetail(params.id, true);
-          return course?.data;
+        loader: async () => {
+          return mockCourseDetails;
         },
         element: <ManageCoursePreviewPage />
       },
+
       {
         path: "/manager/students",
         loader: async () => {
-          const students = await getStudents();
-          return students?.data;
+          return mockStudents;
         },
         element: <ManageStudentsPage />
       },
@@ -141,64 +178,63 @@ const router = createBrowserRouter([
       {
         path: "/manager/students/edit/:id",
         loader: async ({ params }) => {
-          const student = await getDetailStudent(params.id);
-          return student?.data;
+          const student = mockStudents.find((s) => s._id === params.id) || null;
+          return student;
         },
         element: <ManageStudentCreatePage />
       },
+
       {
         path: "/manager/courses/students/:id",
-        loader: async ({ params }) => {
-          const course = await getStudentsCourse(params.id);
-          return course?.data;
+        loader: async () => {
+          return {
+            ...mockCourseDetails,
+            students: mockCourseDetails.students || []
+          };
         },
         element: <StudentsCourseList />
       },
       {
         path: "/manager/courses/students/:id/add",
         loader: async () => {
-          const students = await getStudents();
-          return students?.data;
+          return mockStudents;
         },
         element: <StudentForm />
       }
     ]
   },
+
   {
     path: "/student",
     id: STUDENT_SESSION,
     loader: async () => {
-      const session = secureLocalStorage.getItem(STRORAGE_KEY);
-      if (!session || session.role !== "student") {
-        throw redirect("/student/sign-in");
-      }
-      return session;
+      const session = secureLocalStorage.getItem(STRORAGE_KEY) || mockStudentSession;
+      return typeof session === "string" ? mockStudentSession : session;
     },
     element: <LayoutDashboard isAdmin={false} />,
     children: [
       {
         index: true,
         loader: async () => {
-          const courses = await getCoursesStudents();
-          return courses?.data;
+          return mockCourses;
         },
         element: <StudentPage />
       },
       {
         path: "/student/detail-course/:id",
         loader: async ({ params }) => {
-          const course = await getCourseDetail(params.id, true);
-          return course?.data;
+          return mockCourseDetails;
         },
         element: <ManageCoursePreviewPage isAdmin={false} />
       }
     ]
   },
+
   {
     path: "/student/sign-in",
     loader: async () => {
       const session = secureLocalStorage.getItem(STRORAGE_KEY);
-      if (session && session === "student") {
+      if (session && (session.role === "student" || session === "student")) {
         throw redirect("/student");
       }
       return true;

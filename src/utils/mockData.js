@@ -22,21 +22,27 @@ export const mockOverview = {
   students: [
     {
       _id: "s1",
-      name: "Amanda Zahra",
-      photo_url: "/assets/images/photos/photo-4.png",
+      name: "Naila",
+      photo_url: "/assets/images/photos/photo-1.png",
       courses: [{ name: "React for Beginners" }]
     },
     {
       _id: "s2",
-      name: "Husnul Fikri",
+      name: "Husnul",
       photo_url: "/assets/images/photos/photo-2.png",
       courses: [{ name: "Node.js Essentials" }]
     },
     {
       _id: "s3",
-      name: "Raka Adrian",
+      name: "Fikri",
       photo_url: "/assets/images/photos/photo-3.png",
       courses: [{ name: "Database Design 101" }]
+    },
+    {
+      _id: "s4",
+      name: "Hufy",
+      photo_url: "/assets/images/photos/photo-4.png",
+      courses: [{ name: "Frontend Fundamentals" }]
     }
   ]
 };
@@ -44,24 +50,27 @@ export const mockOverview = {
 export const mockStudents = [
   {
     _id: "s1",
-    name: "Amanda Zahra",
-    email: "amanda@example.com",
-    photo_url: "/assets/images/photos/photo-4.png",
+    name: "Naila",
+    photo_url: "/assets/images/photos/photo-1.png",
     courses: [{ name: "React for Beginners" }]
   },
   {
     _id: "s2",
-    name: "Husnul Fikri",
-    email: "husnul@example.com",
+    name: "Husnul",
     photo_url: "/assets/images/photos/photo-2.png",
     courses: [{ name: "Node.js Essentials" }]
   },
   {
     _id: "s3",
-    name: "Raka Adrian",
-    email: "raka@example.com",
+    name: "Fikri",
     photo_url: "/assets/images/photos/photo-3.png",
     courses: [{ name: "Database Design 101" }]
+  },
+  {
+    _id: "s4",
+    name: "Hufy",
+    photo_url: "/assets/images/photos/photo-4.png",
+    courses: [{ name: "Frontend Fundamentals" }]
   }
 ];
 
@@ -71,19 +80,11 @@ export const mockCourses = [
     name: "React for Beginners",
     tagline: "Learn React the easy way",
     description: "A complete introduction to React for building modern UIs.",
-    thumbnail_url: "/assets/images/photos/photo-1.png",
+    thumbnail_url: "/assets/images/thumbnails/th-1.png",
     category: { name: "Frontend" },
     students: [
-      {
-        _id: "s1",
-        name: "Amanda Zahra",
-        photo_url: "/assets/images/photos/photo-4.png"
-      },
-      {
-        _id: "s2",
-        name: "Husnul Fikri",
-        photo_url: "/assets/images/photos/photo-2.png"
-      }
+      { _id: "s1", name: "Naila", photo_url: "/assets/images/photos/photo-1.png" },
+      { _id: "s2", name: "Husnul", photo_url: "/assets/images/photos/photo-2.png" }
     ]
   },
   {
@@ -91,14 +92,53 @@ export const mockCourses = [
     name: "Node.js Essentials",
     tagline: "Backend for modern web",
     description: "Learn server-side JavaScript with Node.js and Express.",
-    thumbnail_url: "/assets/images/photos/photo-2.png",
+    thumbnail_url: "/assets/images/thumbnails/th-2.png",
     category: { name: "Backend" },
+    students: [{ _id: "s3", name: "Fikri", photo_url: "/assets/images/photos/photo-3.png" }]
+  },
+  {
+    _id: "c3",
+    name: "Database Design 101",
+    tagline: "Master data structuring",
+    description: "Understand database normalization, relationships, and SQL basics.",
+    thumbnail_url: "/assets/images/thumbnails/th-3.png",
+    category: { name: "Database" },
     students: [
-      {
-        _id: "s3",
-        name: "Raka Adrian",
-        photo_url: "/assets/images/photos/photo-3.png"
-      }
+      { _id: "s4", name: "Hufy", photo_url: "/assets/images/photos/photo-4.png" },
+      { _id: "s1", name: "Naila", photo_url: "/assets/images/photos/photo-1.png" }
+    ]
+  },
+  {
+    _id: "c4",
+    name: "DevOps Foundations",
+    tagline: "CI/CD and modern deployment",
+    description: "Learn continuous integration, Docker, and modern deployment pipelines.",
+    thumbnail_url: "/assets/images/thumbnails/th-4.png",
+    category: { name: "DevOps" },
+    students: [{ _id: "s2", name: "Husnul", photo_url: "/assets/images/photos/photo-2.png" }]
+  },
+  {
+    _id: "c5",
+    name: "UI/UX Design Basics",
+    tagline: "Design beautiful user experiences",
+    description: "Learn the principles of user interface and user experience design.",
+    thumbnail_url: "/assets/images/thumbnails/th-5.png",
+    category: { name: "Design" },
+    students: [
+      { _id: "s3", name: "Fikri", photo_url: "/assets/images/photos/photo-3.png" },
+      { _id: "s4", name: "Hufy", photo_url: "/assets/images/photos/photo-4.png" }
+    ]
+  },
+  {
+    _id: "c6",
+    name: "Python for Data Analysis",
+    tagline: "Analyze data with Python",
+    description: "Explore Python libraries for data manipulation, visualization, and analysis.",
+    thumbnail_url: "/assets/images/thumbnails/th-6.png",
+    category: { name: "Data Science" },
+    students: [
+      { _id: "s1", name: "Naila", photo_url: "/assets/images/photos/photo-1.png" },
+      { _id: "s2", name: "Husnul", photo_url: "/assets/images/photos/photo-2.png" }
     ]
   }
 ];

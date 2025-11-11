@@ -1,11 +1,9 @@
 import React from "react";
 import Courses from "./courses";
 import Students from "./students";
-import { Link, useLoaderData } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function ManagerHome() {
-  const overview = useLoaderData();
-
   return (
     <>
       <header className="flex items-center justify-between gap-[30px]">
@@ -32,7 +30,7 @@ export default function ManagerHome() {
               </div>
               <div>
                 <p className="text-[#838C9D] text-sm">Students</p>
-                <p className="text-[20px] font-bold">{overview?.totalStudents}</p>
+                <p className="text-[20px] font-bold">11</p>
               </div>
             </div>
 
@@ -44,7 +42,7 @@ export default function ManagerHome() {
               </div>
               <div>
                 <p className="text-[#838C9D] text-sm">Courses</p>
-                <p className="text-[20px] font-bold">{overview?.totalCourse}</p>
+                <p className="text-[20px] font-bold">11</p>
               </div>
             </div>
 
@@ -56,7 +54,7 @@ export default function ManagerHome() {
               </div>
               <div>
                 <p className="text-[#838C9D] text-sm">Video Content</p>
-                <p className="text-[20px] font-bold">{overview?.totalVideos}</p>
+                <p className="text-[20px] font-bold">11</p>
               </div>
             </div>
 
@@ -68,7 +66,7 @@ export default function ManagerHome() {
               </div>
               <div>
                 <p className="text-[#838C9D] text-sm">Text Content</p>
-                <p className="text-[20px] font-bold">{overview?.totalText}</p>
+                <p className="text-[20px] font-bold">11</p>
               </div>
             </div>
           </div>

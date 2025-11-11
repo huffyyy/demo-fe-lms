@@ -40,7 +40,7 @@ export default function ManageCourseDetailPage() {
         <div className="grid grid-cols-2 gap-5 w-full">
           <div className="flex flex-col rounded-[20px] border border-[#CFDBEF] p-5 gap-4">
             <img src="/assets/images/icons/profile-2user-blue.svg" className="w-8 h-8" alt="icon" />
-            <p className="font-semibold">{course?.students.length} Students</p>
+            <p className="font-semibold">11 Students</p>
           </div>
           <div className="flex flex-col rounded-[20px] border border-[#CFDBEF] p-5 gap-4">
             <img src="/assets/images/icons/crown-blue.svg" className="w-8 h-8" alt="icon" />
