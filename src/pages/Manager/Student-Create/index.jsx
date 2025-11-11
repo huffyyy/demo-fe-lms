@@ -2,14 +2,31 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { createStudentSchema, updateStudentSchema } from "../../../utils/zodSchema";
-import { Link, useLoaderData, useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
-import { createStudents, updateStudents } from "../../../services/studentServices";
+import { Link, useNavigate, useParams } from "react-router-dom";
+
+// ✅ Mock Data Lokal
+const mockStudents = [
+  {
+    _id: "1",
+    name: "Andi Saputra",
+    email: "andi@example.com",
+    photo_url: "/assets/images/avatar-1.png"
+  },
+  {
+    _id: "2",
+    name: "Budi Rahman",
+    email: "budi@example.com",
+    photo_url: "/assets/images/avatar-2.png"
+  }
+];
 
 export default function ManageStudentCreatePage() {
-  const student = useLoaderData();
+  const navigate = useNavigate();
+  const { id } = useParams();
 
-  console.log(student);
+  // ✅ Deteksi mode edit
+  const existingStudent = mockStudents.find((s) => s._id === id);
+  const isEditMode = !!existingStudent;
 
   const {
     register,
@@ -17,44 +34,33 @@ export default function ManageStudentCreatePage() {
     formState: { errors },
     setValue
   } = useForm({
-    resolver: zodResolver(student === undefined ? createStudentSchema : updateStudentSchema),
+    resolver: zodResolver(isEditMode ? updateStudentSchema : createStudentSchema),
     defaultValues: {
-      name: student?.name,
-      email: student?.email
+      name: existingStudent?.name || "",
+      email: existingStudent?.email || ""
     }
   });
-
-  const mutateCreate = useMutation({
-    mutationFn: (data) => createStudents(data)
-  });
-
-  const mutateUpdate = useMutation({
-    mutationFn: (data) => updateStudents(data, student?._id)
-  });
-
-  const navigate = useNavigate();
 
   const [file, setFile] = useState(null);
   const inputFileRef = useRef(null);
 
   const onSubmit = async (values) => {
     try {
-      const formData = new FormData();
+      const formData = {
+        ...values,
+        avatar: file ? file.name : existingStudent?.photo_url || null
+      };
 
-      formData.append("name", values.name);
-      formData.append("email", values.email);
-      formData.append("password", values.password);
-      formData.append("avatar", file);
-
-      if (student === undefined) {
-        await mutateCreate.mutateAsync(formData);
+      if (isEditMode) {
+        console.log("Updated Student:", formData);
       } else {
-        await mutateUpdate.mutateAsync(formData);
+        console.log("Created Student:", formData);
       }
 
+      // Simulasi redirect setelah submit
       navigate("/manager/students");
     } catch (error) {
-      console.log(error);
+      console.error("Error submitting student:", error);
     }
   };
 
@@ -62,10 +68,8 @@ export default function ManageStudentCreatePage() {
     <>
       <header className="flex items-center justify-between gap-[30px]">
         <div>
-          <h1 className="font-extrabold text-[28px] leading-[42px]">{student === undefined ? "Add" : "Edit"} Student</h1>
-          <p className="text-[#838C9D] mt-[1px]">
-            {student === undefined ? "Register a new student" : "Update existing student"}
-          </p>
+          <h1 className="font-extrabold text-[28px] leading-[42px]">{isEditMode ? "Edit" : "Add"} Student</h1>
+          <p className="text-[#838C9D] mt-[1px]">{isEditMode ? "Update existing student" : "Register a new student"}</p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -78,22 +82,23 @@ export default function ManageStudentCreatePage() {
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col w-[550px] rounded-[30px] p-[30px] gap-[30px] bg-[#F8FAFB] m-auto">
+        {/* Avatar */}
         <div className="flex flex-col gap-[10px]">
-          <label className="font-semibold">{student === undefined ? "Add" : "Edit"} Avatar</label>
+          <label className="font-semibold">{isEditMode ? "Edit" : "Add"} Avatar</label>
 
           <div
             className="relative flex w-full h-[200px] rounded-[20px] border border-[#CFDBEF] overflow-hidden cursor-pointer"
             onClick={() => inputFileRef.current?.click()}>
-            {file === null && !student?.photo_url && (
+            {!file && !existingStudent?.photo_url && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
                 <img src="/assets/images/icons/gallery-add-black.svg" className="w-6 h-6" alt="upload" />
                 <span className="text-[#838C9D]">Add student avatar</span>
               </div>
             )}
 
-            {(file !== null || student?.photo_url) && (
+            {(file || existingStudent?.photo_url) && (
               <img
-                src={file ? URL.createObjectURL(file) : student.photo_url}
+                src={file ? URL.createObjectURL(file) : existingStudent.photo_url}
                 className="w-full h-full object-cover"
                 alt="avatar"
               />
@@ -118,6 +123,7 @@ export default function ManageStudentCreatePage() {
           <span className="text-[#FF435A]">{errors?.avatar?.message}</span>
         </div>
 
+        {/* Name */}
         <div className="flex flex-col gap-[10px]">
           <label htmlFor="name" className="font-semibold">
             Full Name
@@ -135,6 +141,7 @@ export default function ManageStudentCreatePage() {
           <span className="text-[#FF435A]">{errors?.name?.message}</span>
         </div>
 
+        {/* Email */}
         <div className="flex flex-col gap-[10px]">
           <label htmlFor="email" className="font-semibold">
             Email Address
@@ -152,7 +159,8 @@ export default function ManageStudentCreatePage() {
           <span className="text-[#FF435A]">{errors?.email?.message}</span>
         </div>
 
-        {student === undefined && (
+        {/* Password hanya muncul di mode Add */}
+        {!isEditMode && (
           <div className="flex flex-col gap-[10px]">
             <label htmlFor="password" className="font-semibold">
               Password
@@ -171,15 +179,13 @@ export default function ManageStudentCreatePage() {
           </div>
         )}
 
+        {/* Buttons */}
         <div className="flex items-center gap-[14px]">
           <button type="button" className="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold">
             Save as Draft
           </button>
-          <button
-            type="submit"
-            disabled={mutateCreate.isLoading || mutateUpdate.isLoading}
-            className="w-full rounded-full p-[14px_20px] font-semibold text-white bg-[#1E40AF]">
-            {student === undefined ? "Add" : "Edit"} Now
+          <button type="submit" className="w-full rounded-full p-[14px_20px] font-semibold text-white bg-[#1E40AF]">
+            {isEditMode ? "Edit" : "Add"} Now
           </button>
         </div>
       </form>

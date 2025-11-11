@@ -1,68 +1,48 @@
-import z from "zod";
+import { z } from "zod";
 
-export const signUpSchema = z.object({
-  name: z.string().min(5),
-  email: z.string().email(),
-  password: z.string().min(5)
+// --- Sign In ---
+export const signInSchema = z.object({
+  email: z.string().email("Email tidak valid"),
+  password: z.string().min(6, "Password minimal 6 karakter")
 });
-export const signInSchema = signUpSchema.omit({ name: true });
 
+// --- Create / Update Course ---
 export const createCourseSchema = z.object({
-  name: z.string().min(5),
-  categoryId: z.string().min(5, { message: "Please select a category" }),
-  tagline: z.string().min(5),
-  description: z.string().min(10),
-  thumbnail: z.any().refine((file) => file?.name, { message: "Thumbnail is required" })
+  name: z.string().min(1, "Course name wajib diisi"),
+  tagline: z.string().min(1, "Tagline wajib diisi"),
+  categoryId: z.string().min(1, "Pilih kategori"),
+  description: z.string().min(1, "Deskripsi wajib diisi")
 });
 
-export const updateCourseSchema = createCourseSchema.partial({
-  thumbnail: true
+export const updateCourseSchema = createCourseSchema.extend({
+  thumbnail: z.any().optional()
 });
 
-export const mutateContentSchema = z
-  .object({
-    title: z.string().min(5),
-    type: z.string().min(3, { message: "Type is required" }),
-    youtubeId: z.string().optional(),
-    text: z.string().optional()
-  })
-  .superRefine((val, ctx) => {
-    const parseVideoId = z.string().min(4).safeParse(val.youtubeId);
-    const parseText = z.string().min(4).safeParse(val.text);
-
-    if (val.type === "Video") {
-      if (!parseVideoId.success) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Youtube ID is required for video content",
-          path: ["youtubeId"]
-        });
-      }
-    }
-
-    if (val.type === "Text") {
-      if (!parseText.success) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Text is required for text content",
-          path: ["text"]
-        });
-      }
-    }
-  });
-
+// --- Create / Update Student ---
 export const createStudentSchema = z.object({
-  name: z.string().min(5),
-  email: z.string().email(),
-  password: z.string().min(5),
-  avatar: z.any().refine((file) => file?.name, { message: "Avatar is required" })
+  name: z.string().min(1, "Nama wajib diisi"),
+  email: z.string().email("Email tidak valid"),
+  password: z.string().min(6, "Password minimal 6 karakter"),
+  avatar: z.any().optional()
 });
 
 export const updateStudentSchema = z.object({
-  name: z.string().min(5),
-  email: z.string().email()
+  name: z.string().min(1, "Nama wajib diisi"),
+  email: z.string().email("Email tidak valid"),
+  avatar: z.any().optional()
 });
 
+// --- Add Student to Course ---
 export const addStudentCourseSchema = z.object({
-  studentId: z.string().min(5)
+  studentId: z.string().min(1, "Pilih salah satu student")
+});
+
+// --- Course Content (Video / Text) ---
+export const mutateContentSchema = z.object({
+  title: z.string().min(1, "Judul wajib diisi"),
+  type: z.enum(["video", "text"], {
+    required_error: "Tipe konten wajib dipilih"
+  }),
+  youtubeId: z.string().optional(),
+  text: z.string().optional()
 });

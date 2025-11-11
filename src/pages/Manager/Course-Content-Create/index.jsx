@@ -1,17 +1,31 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { mutateContentSchema } from "../../../utils/zodSchema";
-import { useMutation } from "@tanstack/react-query";
-import { createContent, updateContent } from "../../../services/courseService";
-import { useLoaderData, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+
+// ===== Mock Data (contoh, sesuaikan dengan punyamu) =====
+const mockContents = [
+  { _id: "cnt1", courseId: "1", title: "Intro React", type: "video", youtubeId: "dQw4w9WgXcQ", text: "" },
+  {
+    _id: "cnt2",
+    courseId: "1",
+    title: "State & Props",
+    type: "text",
+    youtubeId: "",
+    text: "<p>Materi tentang state & props…</p>"
+  }
+];
 
 export default function ManageCourseContentCreatePage() {
-  const content = useLoaderData();
-  const { id, contentId } = useParams();
+  const { id, contentId } = useParams(); // id = courseId
   const navigate = useNavigate();
+
+  // Cek apakah sedang edit berdasarkan mock data
+  const existingContent = mockContents.find((c) => c.courseId === id && c._id === contentId);
+  const isEditMode = !!existingContent;
 
   const {
     register,
@@ -22,61 +36,56 @@ export default function ManageCourseContentCreatePage() {
   } = useForm({
     resolver: zodResolver(mutateContentSchema),
     defaultValues: {
-      title: content?.title,
-      type: content?.type,
-      youtubeId: content?.youtubeId,
-      text: content?.text
+      title: existingContent?.title ?? "",
+      type: existingContent?.type ?? "",
+      youtubeId: existingContent?.youtubeId ?? "",
+      text: existingContent?.text ?? ""
     }
   });
 
-  const mutateCreate = useMutation({
-    mutationFn: (data) => createContent(data)
-  });
+  // Pastikan field "type" terinisialisasi benar saat edit
+  useEffect(() => {
+    if (existingContent?.type) setValue("type", existingContent.type, { shouldValidate: true });
+  }, [existingContent, setValue]);
 
-  const mutateUpdate = useMutation({
-    mutationFn: (data) => updateContent(data, contentId)
-  });
+  const type = watch("type");
 
   const onSubmit = async (values) => {
     try {
-      if (content === undefined) {
-        await mutateCreate.mutateAsync({
-          ...values,
-          courseId: id
-        });
+      const payload = { ...values, courseId: id };
+
+      if (isEditMode) {
+        console.log("Update Content:", { _id: existingContent._id, ...payload });
       } else {
-        await mutateUpdate.mutateAsync({
-          ...values,
-          courseId: id
-        });
+        console.log("Create Content:", payload);
       }
 
+      // Simulasi selesai & kembali ke detail course
       navigate(`/manager/courses/${id}`);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const type = watch("type");
-
   return (
     <>
       <div id="Breadcrumb" className="flex items-center gap-5 *:after:content-['/'] *:after:ml-5">
         <span className="last-of-type:after:content-[''] last-of-type:font-semibold">Manage Course</span>
         <span className="last-of-type:after:content-[''] last-of-type:font-semibold">Course</span>
-        <span className="last-of-type:after:content-[''] last-of-type:font-semibold">
-          {content === undefined ? "Add" : "Edit"} Content
-        </span>
+        <span className="last-of-type:after:content-[''] last-of-type:font-semibold">{isEditMode ? "Edit" : "Add"} Content</span>
       </div>
+
       <header className="flex items-center justify-between gap-[30px]">
         <div className="flex items-center gap-[30px]">
           <div>
-            <h1 className="font-extrabold text-[28px] leading-[42px]">{content === undefined ? "Add" : "Edit"} Content</h1>
+            <h1 className="font-extrabold text-[28px] leading-[42px]">{isEditMode ? "Edit" : "Add"} Content</h1>
             <p className="text-[#838C9D] mt-[1]">Give a best content for the course</p>
           </div>
         </div>
       </header>
+
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-[930px] rounded-[30px] p-[30px] gap-[30px] bg-[#F8FAFB]">
+        {/* Title */}
         <div className="flex flex-col gap-[10px]">
           <label htmlFor="title" className="font-semibold">
             Content Title
@@ -93,6 +102,8 @@ export default function ManageCourseContentCreatePage() {
           </div>
           <span className="error-message text-[#FF435A]">{errors?.title?.message}</span>
         </div>
+
+        {/* Type */}
         <div className="flex flex-col gap-[10px]">
           <label htmlFor="type" className="font-semibold">
             Select Type
@@ -102,7 +113,6 @@ export default function ManageCourseContentCreatePage() {
             <select
               {...register("type")}
               id="type"
-              defaultValue={content?.type || ""}
               className="appearance-none outline-none w-full py-3 px-2 -mx-2 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent">
               <option value="" hidden>
                 Choose content type
@@ -114,6 +124,8 @@ export default function ManageCourseContentCreatePage() {
           </div>
           <span className="error-message text-[#FF435A]">{errors?.type?.message}</span>
         </div>
+
+        {/* Video */}
         {type === "video" && (
           <div className="flex flex-col gap-[10px]">
             <label htmlFor="video" className="font-semibold">
@@ -126,26 +138,26 @@ export default function ManageCourseContentCreatePage() {
                 type="text"
                 id="video"
                 className="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
-                placeholder="Write tagline for better copy"
+                placeholder="Write YouTube video ID"
               />
             </div>
             <span className="error-message text-[#FF435A]">{errors?.youtubeId?.message}</span>
           </div>
         )}
+
+        {/* Text */}
         {type === "text" && (
           <div className="flex flex-col gap-[10px]">
             <label className="font-semibold">Content Text</label>
             <div className="p-5">
-              <h2 className="font-bold mb-3">{content === undefined ? "Add" : "Edit"} Content Text</h2>
+              <h2 className="font-bold mb-3">{isEditMode ? "Edit" : "Add"} Content Text</h2>
               <CKEditor
                 editor={ClassicEditor}
-                config={{
-                  placeholder: "Start writing your course content here..."
-                }}
+                config={{ placeholder: "Start writing your course content here..." }}
                 data={watch("text") || ""}
                 onChange={(event, editor) => {
                   const data = editor.getData();
-                  setValue("text", data);
+                  setValue("text", data, { shouldValidate: true });
                 }}
               />
             </div>
@@ -153,15 +165,23 @@ export default function ManageCourseContentCreatePage() {
           </div>
         )}
 
+        {/* Actions */}
         <div className="flex items-center gap-[14px]">
-          <button type="button" className="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap">
+          <button
+            type="button"
+            className="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap"
+            onClick={() => {
+              const snapshot = { ...watch(), courseId: id };
+              console.log("Draft saved (mock):", snapshot);
+              // Opsional: localStorage.setItem(`draft-content-${id}-${contentId || 'new'}`, JSON.stringify(snapshot));
+            }}>
             Save as Draft
           </button>
+
           <button
             type="submit"
-            disabled={content === undefined ? mutateCreate.isLoading : mutateUpdate.isLoading}
             className="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#1E40AF] text-nowrap">
-            {content === undefined ? "Add" : "Edit"} Content Now
+            {isEditMode ? "Edit" : "Add"} Content Now
           </button>
         </div>
       </form>

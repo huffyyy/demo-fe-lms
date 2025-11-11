@@ -1,3 +1,3 @@
-export const STRORAGE_KEY = "STRORAGE_KEY";
-export const MANAGER_SESSION = "manager-session";
-export const STUDENT_SESSION = "student-session";
+export const STRORAGE_KEY = "LMS_DEMO_KEY";
+export const MANAGER_SESSION = "manager-demo-session";
+export const STUDENT_SESSION = "student-demo-session";
