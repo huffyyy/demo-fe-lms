@@ -18,7 +18,7 @@ export default function Courses() {
             <div
               key={item._id}
               className={`flex items-center gap-5 p-4 ${isColumn1 || isColumn2 ? "border-r border-[#D3D6E4]" : ""}`}>
-              <div className="flex shrink-0 w-[90px] h-[70px] rounded-[16px] bg-[#D9D9D9] overflow-hidden">
+              <div className="flex shrink-0 w-[90px] h-[70px] rounded-[16px] bg-white shadow-[0px_4px_19px_-5px_rgba(0,_0,_0,_0.1)] overflow-hidden ">
                 <img src={item.thumbnail_url} className="w-full h-full object-cover" alt="thumbnail" />
               </div>
 
