@@ -10,7 +10,7 @@ export default function CardCourse({
 }) {
   return (
     <div className="card flex items-center gap-5">
-      <div className="flex shrink-0 w-[100px] h-20 rounded-[20px] bg-[#D9D9D9] overflow-hidden">
+      <div className="flex shrink-0 w-[100px] h-20 rounded-[20px] bg-white shadow-[0px_4px_19px_-5px_rgba(0,_0,_0,_0.1)] overflow-hidden">
         <img src={imageUrl} className="w-full h-full object-cover" alt="thumbnail" />
       </div>
       <div className="w-full">
@@ -18,7 +18,7 @@ export default function CardCourse({
           {title}
         </Link>
         <div className="flex items-center gap-[6px] mt-[6px]">
-          <img src="/assets/images/icons/crown-purple.svg" alt="icon" />
+          <img src="/assets/images/icons/crown-blue.svg" alt="icon" />
           <p className="text-[#838C9D]">{category}</p>
         </div>
       </div>

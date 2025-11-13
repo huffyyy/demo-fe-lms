@@ -175,8 +175,8 @@ export const mockManagerSession = {
 };
 
 export const mockStudentSession = {
-  name: "Amanda Zahra",
+  name: "Husnul",
   role: "student",
-  email: "amanda@example.com",
+  email: "husnul@example.com",
   photo_url: "/assets/images/photos/photo-profile-blue.svg"
 };

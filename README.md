@@ -1,8 +1,7 @@
-# LMS Frontend
+# LMS Demo Frontend
 
-A clean and modern frontend for a Learning Management System (LMS), built with React and Vite.
-Designed to deliver a responsive interface, modular components, and an intuitive learning experience.
-This project is part of a full-stack MERN architecture, integrating MongoDB, Express.js, React, and Node.js.
+This project is a standalone demo that mimics the UI/UX flow of a modern LMS:
+manager & student dashboard, course management, course details, pricing flow, and signup mock.
 
 ---
 
@@ -18,7 +17,8 @@ This project is part of a full-stack MERN architecture, integrating MongoDB, Exp
 - React
 - Vite
 - TailwindCSS
-- JavaScript (ES6+)
+- React Router
+- Mock Data System (no backend)
 
 ---
 
@@ -26,52 +26,76 @@ This project is part of a full-stack MERN architecture, integrating MongoDB, Exp
 
 - Git & GitHub
 - Visual Studio Code
-- Postman
 - Figma
 
 ## Features
 
-- Modern and responsive UI
-- Course browsing and detailed views
-- Student/instructor dashboard
-- Structured learning workflow
-- Modular and reusable components
-- Fast development setup with Vite
+- **General**
+  - Modern, responsive dashboard layout (Manager & Student)
+  - Clean card-based UI with consistent design system
+- **Manager Features**
+  - Manage Courses (with mock delete/edit)
+  - Manage Students List
+  - Course Detail with dynamic content
+  - Add/Edit course (mock)
+- **Student Features**
+
+  - Course browsing (mock)
+  - Course detail preview
+  - progress sections (static preview)
+
+- **Auth & SignUp Flow**
+
+  - Mock Signup → Pricing → Success Checkout
+  - Mock Login (manager / student)
+
+- **Internals**
+  - 100% frontend (all data uses mockData.js)
+  - No API calls, no backend dependency
+  - Pages load using loader React Router
 
 ---
 
-## 🛠 Installation
+## Demo Link
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/lms-frontend.git
+https://demo-fe-lms.vercel.app/
+```
 
-# Navigate into the folder
-cd lms-frontend
+## Installation
+
+```bash
+# Clone repository
+git clone https://github.com/your-username/demo-fe-lms.git
+
+# Masuk ke folder
+cd demo-fe-lms
 
 # Install dependencies
 npm install
 
-# Start development server
+# Jalankan server development
 npm run dev
+
 ```
 
 ## Project Structures
 
 ```bash
-lms-frontend/
+demo-fe-lms/
 │
 ├── src/
+│   ├── assets/            # Static images/icons
 │   ├── components/        # Reusable UI components
-│   ├── pages/             # Main pages
-│   ├── layouts/           # Layout wrappers (dashboard, etc)
-│   ├── routes/            # App routing
-│   ├── assets/            # Images, icons, static assets
-│   └── main.jsx           # Application entry point
+│   ├── pages/             # Page views (manager/student/frontend)
+│   ├── routes/            # Routing + loader setup
+│   ├── utils/             # mockData, helpers, constants
+│   └── main.jsx           # Entry point
 │
 ├── public/
 ├── package.json
 └── vite.config.js
+
 ```
 
 ## Scripts
@@ -82,11 +106,22 @@ npm run build     # Build for production
 npm run preview   # Preview the production build locally
 ```
 
-## Roadmap (Planned Imporvements)
+## Roadmap (Future Imporvements)
 
-- Add role-based authentication (student/instructor/admin)
-- Course enrollment flow
-- Quiz and assignment pages
-- User profile management
-- API integration with backend service
-- UI polish and accessibility improvements
+- Full backend REST API integration
+- Real authentication (JWT)
+- Course enrollment system
+- Quiz & assignment modules
+- Student analytics & charts
+- Improved accessibility & animations
+
+## Notes
+
+**This is a DEMO version**, not a fullstack version.
+All data uses:
+
+```bash
+src/utils/mockData.js
+```
+
+No requests to the server — suitable for showcases, portfolios, and UI previews.
