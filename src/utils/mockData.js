@@ -163,8 +163,8 @@ export const mockCourseDetails = {
     }
   ],
   students: [
-    { _id: "s1", name: "Amanda Zahra", photo_url: "/assets/images/photos/photo-profile-blue.svg" },
-    { _id: "s2", name: "Husnul Fikri", photo_url: "/assets/images/photos/photo-profile-blue.svg" }
+    { _id: "s1", name: "Naila", photo_url: "/assets/images/photos/photo-profile-blue.svg" },
+    { _id: "s2", name: "Husnul", photo_url: "/assets/images/photos/photo-profile-blue.svg" }
   ]
 };
 

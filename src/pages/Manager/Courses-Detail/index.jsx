@@ -34,7 +34,9 @@ export default function ManageCourseDetailPage() {
         </div>
       </header>
       <section id="CourseInfo" className="flex gap-[50px]">
-        <div id="Thumbnail" className="flex shrink-0 w-[480px] h-[250px] rounded-[20px] bg-[#D9D9D9] overflow-hidden">
+        <div
+          id="Thumbnail"
+          className="flex shrink-0 w-[480px] h-[250px] rounded-[20px] bg-white shadow-[0px_4px_19px_-5px_rgba(0,_0,_0,_0.1)] border border-[#CFDBEF]  overflow-hidden">
           <img src={course?.thumbnail_url} className="w-full h-full object-cover" alt="thumbnail" />
         </div>
         <div className="grid grid-cols-2 gap-5 w-full">

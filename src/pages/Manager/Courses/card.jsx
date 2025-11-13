@@ -8,7 +8,6 @@ import { mockCourses as initialMockCourses } from "../../../utils/mockData";
 
 let mockCourses = [...initialMockCourses];
 
-// 🧩 Simulasi penghapusan course dari mock
 const deleteMockCourse = async (_id) => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -42,7 +41,7 @@ export default function CardCourse({
       setIsLoading(true);
       try {
         await deleteMockCourse(_id);
-        console.log(`✅ Deleted course: ${name} (${_id})`);
+        console.log(` Deleted course: ${name} (${_id})`);
       } catch (err) {
         console.error(err);
         setError(err.message || "Failed to delete course");
@@ -60,12 +59,10 @@ export default function CardCourse({
   return (
     <>
       <div className="card flex items-center gap-5">
-        {/* Thumbnail */}
-        <div className="flex shrink-0 w-[140px] h-[110px] rounded-[20px] bg-[#D9D9D9] overflow-hidden">
+        <div className="flex shrink-0 w-[140px] h-[110px] rounded-[20px] bg-white shadow-[0px_4px_19px_-5px_rgba(0,_0,_0,_0.1)]  overflow-hidden">
           <img src={thumbnail_url} className="w-full h-full object-cover" alt={`${name} thumbnail`} loading="lazy" />
         </div>
 
-        {/* Course Info */}
         <div className="w-full">
           <h3 className="font-bold text-xl leading-[30px] line-clamp-1" title={name}>
             {name}
@@ -84,7 +81,6 @@ export default function CardCourse({
           </div>
         </div>
 
-        {/* Actions */}
         <div className="flex justify-end items-center gap-3">
           <Link
             to={`/manager/courses/students/${_id}`}
@@ -107,8 +103,6 @@ export default function CardCourse({
           </Link>
         </div>
       </div>
-
-      {/* Toast & Modal */}
       <ErrorToast message={error} onClose={() => setError(null)} />
 
       <ConfirmModal

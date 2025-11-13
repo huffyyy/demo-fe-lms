@@ -5,29 +5,33 @@ import ConfirmModal from "../../../components/common/confirmModal";
 import ErrorToast from "../../../components/common/errorToast";
 import { useConfirmModal } from "../../../components/common/useConfirmModal";
 
-// ✅ Mock data (daftar students)
 let mockStudents = [
   {
     id: "1",
-    name: "Angga Risky Setiawan",
-    imageUrl: "/assets/images/photos/photo-3.png",
+    name: "Naila",
+    imageUrl: "/assets/images/photos/photo-profile-blue.svg",
     totalCourse: 3
   },
   {
     id: "2",
-    name: "Budi Hartono",
-    imageUrl: "/assets/images/photos/photo-4.png",
+    name: "Husnul",
+    imageUrl: "/assets/images/photos/photo-profile-blue.svg",
     totalCourse: 5
   },
   {
     id: "3",
-    name: "Citra Dewi",
-    imageUrl: "/assets/images/photos/photo-2.png",
+    name: "Fikri",
+    imageUrl: "/assets/images/photos/photo-profile-blue.svg",
     totalCourse: 2
+  },
+  {
+    id: "4",
+    name: "Hufy",
+    imageUrl: "/assets/images/photos/photo-profile-blue.svg",
+    totalCourse: 4
   }
 ];
 
-// ✅ Simulasi fungsi hapus student (mock)
 const deleteMockStudent = async (id) => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -52,7 +56,6 @@ export default function StudentItem({
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // 🔥 Fungsi hapus mock
   const handleDeleteClick = () => {
     setError(null);
     confirmModal.open(async () => {
@@ -60,7 +63,6 @@ export default function StudentItem({
       try {
         await deleteMockStudent(id);
         console.log(`✅ Deleted student: ${name} (${id})`);
-        // Bisa tambahkan callback untuk update parent state nanti
       } catch (err) {
         console.error(err);
         setError(err.message || "Failed to delete student");
@@ -78,12 +80,11 @@ export default function StudentItem({
   return (
     <>
       <div className="card flex items-center gap-5">
-        {/* Avatar */}
         <div className="relative flex shrink-0 w-20 h-20">
-          <div className="rounded-[20px] bg-[#D9D9D9] overflow-hidden">
+          <div className="rounded-[20px]  overflow-hidden shadow-[0px_4px_19px_-5px_rgba(0,_0,_0,_0.1)]">
             <img
               src={imageUrl}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover "
               alt={name}
               onError={(e) => {
                 e.target.onerror = null;
@@ -93,7 +94,6 @@ export default function StudentItem({
           </div>
         </div>
 
-        {/* Info student */}
         <div className="w-full">
           <h3 className="font-bold text-xl leading-[30px] line-clamp-1">{name}</h3>
           <div className="flex items-center gap-5">
@@ -104,7 +104,6 @@ export default function StudentItem({
           </div>
         </div>
 
-        {/* Tombol aksi */}
         <div className="flex justify-end items-center gap-3">
           <Link
             to={`/manager/students/edit/${id}`}
@@ -122,7 +121,6 @@ export default function StudentItem({
         </div>
       </div>
 
-      {/* Toast & Modal */}
       <ErrorToast message={error} onClose={() => setError(null)} />
 
       <ConfirmModal

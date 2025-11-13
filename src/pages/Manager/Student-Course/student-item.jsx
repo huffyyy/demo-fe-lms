@@ -4,14 +4,13 @@ import ConfirmModal from "../../../components/common/confirmModal";
 import ErrorToast from "../../../components/common/errorToast";
 import { useConfirmModal } from "../../../components/common/useConfirmModal";
 
-// ✅ Mock data (contoh daftar student yang terdaftar di course)
 let mockCourseStudents = [
-  { id: "s1", name: "Andi Saputra", imageUrl: "" },
-  { id: "s2", name: "Budi Rahman", imageUrl: "" },
-  { id: "s3", name: "Citra Dewi", imageUrl: "" }
+  { _id: "1", name: "Naila" },
+  { _id: "2", name: "Husnul" },
+  { _id: "3", name: "Fikri" },
+  { _id: "4", name: "Hufy" }
 ];
 
-// ✅ Simulasi penghapusan student dari course
 const deleteMockStudentFromCourse = async (studentId) => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -31,7 +30,6 @@ export default function StudentItem({ imageUrl, name, id }) {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // 🔤 Generate warna avatar berdasarkan nama
   const stringToHsl = (str) => {
     let hash = 0;
     for (let i = 0; i < str?.length; i++) {
@@ -44,7 +42,6 @@ export default function StudentItem({ imageUrl, name, id }) {
   const initial = name?.charAt(0)?.toUpperCase() ?? "U";
   const avatarColor = stringToHsl(name ?? "User");
 
-  // 🧹 Fungsi hapus student (mock)
   const handleDeleteClick = () => {
     setError(null);
     confirmModal.open(async () => {
@@ -52,7 +49,6 @@ export default function StudentItem({ imageUrl, name, id }) {
       try {
         await deleteMockStudentFromCourse(id);
         console.log(`✅ Removed student ${name} (${id})`);
-        // Bisa tambahkan callback revalidate di parent nanti
       } catch (err) {
         console.error(err);
         setError(err.message || "Failed to remove student");
@@ -70,9 +66,8 @@ export default function StudentItem({ imageUrl, name, id }) {
   return (
     <>
       <div className="card flex items-center gap-5">
-        {/* Avatar */}
         <div className="relative flex shrink-0 w-20 h-20">
-          <div className="rounded-[20px] overflow-hidden w-full h-full">
+          <div className="rounded-[20px] overflow-hidden w-full h-full shadow-[0px_4px_19px_-5px_rgba(0,_0,_0,_0.1)]">
             {imageUrl ? (
               <img
                 src={imageUrl}
@@ -93,12 +88,10 @@ export default function StudentItem({ imageUrl, name, id }) {
           </div>
         </div>
 
-        {/* Nama Student */}
         <div className="w-full">
           <h3 className="font-bold text-xl leading-[30px] line-clamp-1">{name}</h3>
         </div>
 
-        {/* Tombol Aksi */}
         <div className="flex justify-end items-center gap-3">
           <button
             type="button"
@@ -110,7 +103,6 @@ export default function StudentItem({ imageUrl, name, id }) {
         </div>
       </div>
 
-      {/* Toast & Modal */}
       <ErrorToast message={error} onClose={() => setError(null)} />
 
       <ConfirmModal

@@ -1,5 +1,5 @@
 import React from "react";
-import CardCourse from "./card"; // ✅ perbaikan ejaan
+import CardCourse from "./card";
 import { Link, useLoaderData } from "react-router-dom";
 
 export default function ManageCoursePage() {
@@ -44,7 +44,6 @@ export default function ManageCoursePage() {
           <p className="text-gray-400 text-center py-10">No courses available.</p>
         )}
 
-        {/* Pagination */}
         <div id="Pagination" className="flex items-center gap-3">
           {[1, 2, 3, 4, 5].map((num) => (
             <button

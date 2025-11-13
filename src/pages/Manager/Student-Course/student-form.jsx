@@ -5,9 +5,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { addStudentCourseSchema } from "../../../utils/zodSchema";
 
 const mockStudents = [
-  { _id: "1", name: "Andi Pratama" },
-  { _id: "2", name: "Budi Santoso" },
-  { _id: "3", name: "Citra Lestari" }
+  { _id: "1", name: "Naila" },
+  { _id: "2", name: "Husnul" },
+  { _id: "3", name: "Fikri" },
+  { _id: "4", name: "Hufy" }
 ];
 
 export default function StudentForm() {
@@ -23,10 +24,8 @@ export default function StudentForm() {
   });
 
   const onSubmit = async (values) => {
-    // ✅ Simulasi submit tanpa backend
     console.log("Submitted values:", values);
 
-    // Simulasi redirect ke halaman daftar student course
     navigate(`/manager/courses/students/${id}`);
   };
 
@@ -67,7 +66,7 @@ export default function StudentForm() {
           <button type="button" className="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap">
             Save as Draft
           </button>
-          <button type="submit" className="w-full rounded-full p-[14px_20px] font-semibold text-white bg-[#662FFF]">
+          <button type="submit" className="w-full rounded-full p-[14px_20px] font-semibold text-white bg-[#1E40AF]">
             Add Now
           </button>
         </div>
